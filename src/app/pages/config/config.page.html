@@ -1,21 +1,22 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Configuracion</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content class="ion-padding">
+<ion-content class="ion-padding page config-page">
   <ion-toast
     [isOpen]="!!errorMessage"
     [message]="errorMessage"
     duration="2000"
     (didDismiss)="errorMessage = ''"
   ></ion-toast>
-  <h2>Photobooth</h2>
-  <p>Temporizador y camara antes de empezar.</p>
+  <div class="hero safe-top">
+    <h2>Photobooth</h2>
+    <p>Temporizador y camara antes de empezar.</p>
+  </div>
 
-  <ion-list>
-    <ion-item>
+  <ion-card class="panel">
+    <ion-card-header>
+      <ion-card-title>Ajustes</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list lines="none">
+        <ion-item>
       <ion-label>Segundos por foto: {{ secondsPerShot }}</ion-label>
       <ion-range
         min="1"
@@ -29,85 +30,84 @@
       <ion-label>Camara frontal</ion-label>
       <ion-toggle [(ngModel)]="useFrontCamera"></ion-toggle>
     </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
 
-  </ion-list>
+  <ion-card class="panel">
+    <ion-card-header>
+      <ion-card-title>Fondos</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-button expand="block">
+        <label class="file-button">
+          Agregar fondo
+          <input
+            type="file"
+            accept="image/*"
+            (change)="onBackgroundSelected($event)"
+          />
+        </label>
+      </ion-button>
+      <ion-button expand="block" color="medium" (click)="selectBackground(null)">
+        Sin fondo
+      </ion-button>
 
-  <ion-item lines="none">
-    <ion-label>Fondo</ion-label>
-  </ion-item>
-  <ion-button expand="block">
-    <label style="display: block; width: 100%;">
-      Agregar fondo
-      <input
-        type="file"
-        accept="image/*"
-        (change)="onBackgroundSelected($event)"
-        style="display: none;"
-      />
-    </label>
-  </ion-button>
-  <ion-button expand="block" color="medium" (click)="selectBackground(null)">
-    Sin fondo
-  </ion-button>
-
-  <div *ngIf="backgroundGallery.length > 0; else noBackground">
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px;">
-      <div
-        *ngFor="let item of backgroundGallery"
-        (click)="selectBackground(item.id)"
-        [style.border]="selectedBackgroundId === item.id ? '2px solid #3880ff' : '1px solid #444'"
-        style="border-radius: 8px; padding: 4px; cursor: pointer;"
-      >
-        <img
-          [src]="item.dataUrl"
-          alt="Fondo"
-          style="width: 100%; height: 80px; object-fit: cover; border-radius: 6px;"
-        />
-        <ion-button
-          size="small"
-          color="danger"
-          expand="block"
-          (click)="removeBackground(item.id); $event.stopPropagation()"
-        >
-          Eliminar
-        </ion-button>
+      <div *ngIf="backgroundGallery.length > 0; else noBackground">
+        <div class="gallery">
+          <div
+            *ngFor="let item of backgroundGallery"
+            class="gallery-item"
+            [class.selected]="selectedBackgroundId === item.id"
+            (click)="selectBackground(item.id)"
+          >
+            <img [src]="item.dataUrl" alt="Fondo" />
+            <ion-button
+              size="small"
+              color="danger"
+              expand="block"
+              (click)="removeBackground(item.id); $event.stopPropagation()"
+            >
+              Eliminar
+            </ion-button>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-  <ng-template #noBackground>
-    <p>No hay fondos guardados.</p>
-  </ng-template>
+      <ng-template #noBackground>
+        <p class="muted">No hay fondos guardados.</p>
+      </ng-template>
+    </ion-card-content>
+  </ion-card>
 
-  <ion-item lines="none">
-    <ion-label>Vista previa</ion-label>
-  </ion-item>
-  <canvas
-    #previewCanvas
-    style="width: 100%; max-width: 270px; border-radius: 8px; background: #000;"
-  ></canvas>
+  <ion-card class="panel">
+    <ion-card-header>
+      <ion-card-title>Vista previa</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #previewCanvas class="preview-canvas"></canvas>
+      <ion-button expand="block" color="medium" (click)="openPreview()">
+        Probar plantilla
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
 
-  <ion-button expand="block" color="medium" (click)="openPreview()">
-    Probar plantilla
+  <ion-button expand="block" class="primary-action" (click)="start()">
+    Empezar
   </ion-button>
-
-  <ion-button expand="block" (click)="start()">Empezar</ion-button>
 </ion-content>
 
 <ion-modal [isOpen]="isPreviewOpen" (didDismiss)="closePreview()">
   <ng-template>
     <ion-header>
-      <ion-toolbar>
+      <ion-toolbar class="page-toolbar">
         <ion-title>Vista previa</ion-title>
         <ion-buttons slot="end">
           <ion-button (click)="closePreview()">Cerrar</ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <ion-content class="ion-padding">
-      <canvas
-        #fullPreviewCanvas
-        style="width: 100%; max-width: 540px; border-radius: 12px; background: #000;"
-      ></canvas>
+    <ion-content class="ion-padding page">
+      <canvas #fullPreviewCanvas class="preview-canvas full"></canvas>
     </ion-content>
   </ng-template>
 </ion-modal>

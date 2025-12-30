@@ -2,8 +2,19 @@ import { CameraProvider } from './camera-provider';
 
 export class WebcamCameraProvider implements CameraProvider {
   private stream: MediaStream | null = null;
+  private videoEl: HTMLVideoElement | null = null;
 
-  async start(videoEl: HTMLVideoElement): Promise<void> {
+  isSupported(): boolean {
+    return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  }
+
+  async start(target: HTMLVideoElement | HTMLElement): Promise<void> {
+    if (!(target instanceof HTMLVideoElement)) {
+      throw new Error('Webcam target must be a video element');
+    }
+
+    const videoEl = target;
+    this.videoEl = videoEl;
     this.stream = await navigator.mediaDevices.getUserMedia({
       video: true,
       audio: false,
@@ -13,7 +24,11 @@ export class WebcamCameraProvider implements CameraProvider {
     await videoEl.play();
   }
 
-  async capture(videoEl: HTMLVideoElement): Promise<Blob> {
+  async capture(): Promise<Blob> {
+    const videoEl = this.videoEl;
+    if (!videoEl) {
+      throw new Error('Webcam not started');
+    }
     const canvas = document.createElement('canvas');
     canvas.width = videoEl.videoWidth || 1280;
     canvas.height = videoEl.videoHeight || 720;
@@ -47,5 +62,6 @@ export class WebcamCameraProvider implements CameraProvider {
 
     this.stream.getTracks().forEach((track) => track.stop());
     this.stream = null;
+    this.videoEl = null;
   }
 }

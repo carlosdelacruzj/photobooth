@@ -1,10 +1,4 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Resultado</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content class="ion-padding">
+<ion-content class="ion-padding page result-page" fullscreen="true">
   <ion-toast
     [isOpen]="!!errorMessage"
     [message]="errorMessage"
@@ -18,7 +12,7 @@
 
   <ng-template #content>
     <div *ngIf="collage; else empty">
-      <img [src]="collage.dataUrl" alt="Collage final" />
+      <img [src]="collage.dataUrl" alt="Collage final" class="media-preview" />
       <ion-button expand="block" (click)="handleExport()">
         {{ isNativePlatform ? 'Exportar' : 'Descargar' }}
       </ion-button>

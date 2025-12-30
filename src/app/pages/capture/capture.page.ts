@@ -4,8 +4,7 @@ import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { CameraProvider } from '../../core/camera/camera-provider';
-import { NativeCameraProvider } from '../../core/camera/native-camera-provider';
-import { WebcamCameraProvider } from '../../core/camera/webcam-camera-provider';
+import { getCameraProvider } from '../../core/camera/camera-provider.factory';
 import { PhotoboothStateService } from '../../core/services/photobooth-state.service';
 import { isNative } from '../../core/utils/platform';
 
@@ -21,11 +20,15 @@ export class CapturePage implements OnInit, AfterViewInit, OnDestroy {
   totalPhotos = 0;
   isRunning = false;
   errorMessage = '';
+  isNativePlatform = isNative();
 
-  @ViewChild('preview', { static: false }) previewRef?: ElementRef<HTMLVideoElement>;
+  @ViewChild('videoPreview', { static: false })
+  videoPreviewRef?: ElementRef<HTMLVideoElement>;
+
+  @ViewChild('nativePreviewContainer', { static: false })
+  nativePreviewContainerRef?: ElementRef<HTMLDivElement>;
 
   private provider: CameraProvider | null = null;
-  private isNativePlatform = isNative();
   private isCancelled = false;
   private countdownResolver: (() => void) | null = null;
   private timers: Array<{ id: number; type: 'timeout' | 'interval' }> = [];
@@ -42,16 +45,17 @@ export class CapturePage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async ngAfterViewInit(): Promise<void> {
-    this.provider = this.isNativePlatform
-      ? new NativeCameraProvider()
-      : new WebcamCameraProvider();
-    const videoEl = this.previewRef?.nativeElement;
-    if (!videoEl) {
+    this.provider = getCameraProvider();
+    const target = this.isNativePlatform
+      ? this.nativePreviewContainerRef?.nativeElement
+      : this.videoPreviewRef?.nativeElement;
+
+    if (!target) {
       return;
     }
 
     try {
-      await this.provider.start(videoEl);
+      await this.provider.start(target);
     } catch {
       await this.handleError(
         this.isNativePlatform
@@ -76,7 +80,12 @@ export class CapturePage implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const videoEl = this.previewRef?.nativeElement;
+    if (this.isNativePlatform) {
+      await this.handleError('Camara nativa pendiente de implementacion.');
+      return;
+    }
+
+    const videoEl = this.videoPreviewRef?.nativeElement;
     if (!videoEl || !this.provider) {
       return;
     }
@@ -100,7 +109,7 @@ export class CapturePage implements OnInit, AfterViewInit, OnDestroy {
 
       this.state.setStatus('capturing');
       try {
-        const photo = await this.provider.capture(videoEl);
+        const photo = await this.provider.capture();
         this.state.addPhoto(photo);
         this.currentIndex = this.state.getSession().currentIndex;
       } catch {

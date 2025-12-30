@@ -1,11 +1,15 @@
 import { CameraProvider } from './camera-provider';
 
 export class NativeCameraProvider implements CameraProvider {
-  async start(_videoEl: HTMLVideoElement): Promise<void> {
+  isSupported(): boolean {
+    return false;
+  }
+
+  async start(_target: HTMLVideoElement | HTMLElement): Promise<void> {
     throw new Error('Native camera provider not implemented');
   }
 
-  async capture(_videoEl: HTMLVideoElement): Promise<Blob> {
+  async capture(): Promise<Blob> {
     throw new Error('Native camera provider not implemented');
   }
 
