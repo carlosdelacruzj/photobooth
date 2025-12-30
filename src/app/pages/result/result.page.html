@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Resultado</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-toast
+    [isOpen]="!!errorMessage"
+    [message]="errorMessage"
+    duration="2200"
+    (didDismiss)="errorMessage = ''"
+  ></ion-toast>
+
+  <ng-container *ngIf="isLoading; else content">
+    <p>Generando collage...</p>
+  </ng-container>
+
+  <ng-template #content>
+    <div *ngIf="collage; else empty">
+      <img [src]="collage.dataUrl" alt="Collage final" />
+      <ion-button expand="block" (click)="handleExport()">
+        {{ isNativePlatform ? 'Exportar' : 'Descargar' }}
+      </ion-button>
+      <ion-button expand="block" color="medium" (click)="restart()">
+        Repetir
+      </ion-button>
+    </div>
+
+    <ng-template #empty>
+      <p>No hay fotos para mostrar.</p>
+      <ion-button expand="block" color="medium" (click)="restart()">
+        Volver
+      </ion-button>
+    </ng-template>
+  </ng-template>
+</ion-content>

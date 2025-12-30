@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Captura</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-toast
+    [isOpen]="!!errorMessage"
+    [message]="errorMessage"
+    duration="2500"
+    (didDismiss)="errorMessage = ''"
+  ></ion-toast>
+
+  <div>
+    <h2>Sesion en curso</h2>
+    <p>Cuenta regresiva: {{ countdown }}</p>
+    <p>Progreso: {{ currentIndex }}/{{ totalPhotos }}</p>
+  </div>
+
+  <video #preview autoplay playsinline muted style="width: 100%; border-radius: 12px;"></video>
+
+  <ion-button expand="block" [disabled]="isRunning" (click)="start()">
+    Start
+  </ion-button>
+  <ion-button expand="block" color="medium" (click)="cancel()">
+    Cancel
+  </ion-button>
+</ion-content>
