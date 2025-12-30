@@ -1,0 +1,7 @@
+{
+  "name": "photobooth",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
