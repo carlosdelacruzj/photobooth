@@ -44,14 +44,21 @@
   --pb-text: #1b1b1b;
   --pb-muted: #6b6b6b;
   --pb-accent: #ff9f0a;
+  --ion-background-color: var(--pb-bg);
+  --ion-text-color: var(--pb-text);
+  --ion-card-background: var(--pb-card);
+  --ion-item-background: transparent;
+  --ion-item-color: var(--pb-text);
+  --ion-toolbar-background: transparent;
+  --ion-toolbar-color: var(--pb-text);
 }
 
 ion-content.page {
   --background: radial-gradient(120% 120% at 50% -10%, #ffffff 0%, var(--pb-bg) 50%, var(--pb-bg-2) 100%);
   color: var(--pb-text);
   font-family: var(--pb-font);
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
+  --padding-top: env(safe-area-inset-top);
+  --padding-bottom: env(safe-area-inset-bottom);
 }
 
 .page-header ion-toolbar.page-toolbar {
