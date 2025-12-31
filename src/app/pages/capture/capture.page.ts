@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
@@ -14,7 +14,7 @@ import { isNative } from '../../core/utils/platform';
   imports: [CommonModule, IonicModule],
   templateUrl: './capture.page.html',
 })
-export class CapturePage implements OnInit, AfterViewInit, OnDestroy {
+export class CapturePage implements OnInit, OnDestroy {
   countdown = 0;
   currentIndex = 0;
   totalPhotos = 0;
@@ -30,6 +30,7 @@ export class CapturePage implements OnInit, AfterViewInit, OnDestroy {
 
   private provider: CameraProvider | null = null;
   private isCancelled = false;
+  private isPreviewStarted = false;
   private countdownResolver: (() => void) | null = null;
   private timers: Array<{ id: number; type: 'timeout' | 'interval' }> = [];
 
@@ -44,8 +45,12 @@ export class CapturePage implements OnInit, AfterViewInit, OnDestroy {
     this.totalPhotos = session.totalPhotos;
   }
 
-  async ngAfterViewInit(): Promise<void> {
-    this.provider = getCameraProvider();
+  async ionViewDidEnter(): Promise<void> {
+    if (this.isPreviewStarted) {
+      return;
+    }
+
+    this.provider = this.provider ?? getCameraProvider();
     const config = this.state.getConfig();
     await this.provider.init?.({
       facingMode: config.facingMode === 'front' ? 'user' : 'environment',
@@ -60,6 +65,7 @@ export class CapturePage implements OnInit, AfterViewInit, OnDestroy {
 
     try {
       await this.provider.start(target);
+      this.isPreviewStarted = true;
     } catch {
       await this.handleError(
         'No se pudo iniciar la camara.'
@@ -70,11 +76,13 @@ export class CapturePage implements OnInit, AfterViewInit, OnDestroy {
   ionViewDidLeave(): void {
     this.clearAllTimers();
     this.provider?.stop();
+    this.isPreviewStarted = false;
   }
 
   ngOnDestroy(): void {
     this.clearAllTimers();
     this.provider?.stop();
+    this.isPreviewStarted = false;
   }
 
   async start(): Promise<void> {

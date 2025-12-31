@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 
+import { sessionGuard } from './core/guards/session.guard';
+
 export const routes: Routes = [
   {
     path: '',
@@ -15,6 +17,7 @@ export const routes: Routes = [
     path: 'capture',
     loadComponent: () =>
       import('./pages/capture/capture.page').then((m) => m.CapturePage),
+    canActivate: [sessionGuard],
   },
   {
     path: 'resultado',
