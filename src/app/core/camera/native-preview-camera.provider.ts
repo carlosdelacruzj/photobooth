@@ -25,6 +25,8 @@ export class NativePreviewCameraProvider implements CameraProvider {
       throw new Error('Native preview target must be an HTML element');
     }
 
+    await CameraPreview.requestPermissions();
+
     const container = _target;
     if (!container.id) {
       container.id = `native-preview-${Date.now()}`;
