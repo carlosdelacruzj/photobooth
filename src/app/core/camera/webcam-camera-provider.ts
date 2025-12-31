@@ -3,9 +3,14 @@ import { CameraProvider } from './camera-provider';
 export class WebcamCameraProvider implements CameraProvider {
   private stream: MediaStream | null = null;
   private videoEl: HTMLVideoElement | null = null;
+  private facingMode?: 'user' | 'environment';
 
   isSupported(): boolean {
     return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  }
+
+  async init(options?: { facingMode?: 'user' | 'environment' }): Promise<void> {
+    this.facingMode = options?.facingMode;
   }
 
   async start(target: HTMLVideoElement | HTMLElement): Promise<void> {
@@ -15,8 +20,11 @@ export class WebcamCameraProvider implements CameraProvider {
 
     const videoEl = target;
     this.videoEl = videoEl;
+    const videoConstraints: MediaTrackConstraints | boolean = this.facingMode
+      ? { facingMode: { ideal: this.facingMode } }
+      : true;
     this.stream = await navigator.mediaDevices.getUserMedia({
-      video: true,
+      video: videoConstraints,
       audio: false,
     });
 

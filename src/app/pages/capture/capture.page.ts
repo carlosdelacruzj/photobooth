@@ -46,6 +46,10 @@ export class CapturePage implements OnInit, AfterViewInit, OnDestroy {
 
   async ngAfterViewInit(): Promise<void> {
     this.provider = getCameraProvider();
+    const config = this.state.getConfig();
+    await this.provider.init?.({
+      facingMode: config.facingMode === 'front' ? 'user' : 'environment',
+    });
     const target = this.isNativePlatform
       ? this.nativePreviewContainerRef?.nativeElement
       : this.videoPreviewRef?.nativeElement;
@@ -58,9 +62,7 @@ export class CapturePage implements OnInit, AfterViewInit, OnDestroy {
       await this.provider.start(target);
     } catch {
       await this.handleError(
-        this.isNativePlatform
-          ? 'Camara nativa pendiente de implementacion.'
-          : 'No se pudo iniciar la camara.'
+        'No se pudo iniciar la camara.'
       );
     }
   }
@@ -80,13 +82,7 @@ export class CapturePage implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    if (this.isNativePlatform) {
-      await this.handleError('Camara nativa pendiente de implementacion.');
-      return;
-    }
-
-    const videoEl = this.videoPreviewRef?.nativeElement;
-    if (!videoEl || !this.provider) {
+    if (!this.provider) {
       return;
     }
 
